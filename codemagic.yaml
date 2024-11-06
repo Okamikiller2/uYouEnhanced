@@ -1,33 +1,20 @@
 workflows:
-  ios-workflow:
+  ios-build:
     name: uYouEnhanced Build
     instance_type: mac_mini_m2
     max_build_duration: 120
     environment:
       vars:
         BUNDLE_ID: "com.google.ios.youtube"
-        XCODE_WORKSPACE: "YouTube.xcworkspace"
-        XCODE_SCHEME: "YouTube"
       xcode: latest
-      cocoapods: default
-    
     scripts:
-      - name: Set up code signing
-        script: |
-          keychain initialize
-          
-      - name: Fetch dependencies
-        script: |
-          pod install
-          
       - name: Build IPA
         script: |
+          cd $CM_BUILD_DIR
           xcode-project build-ipa \
-            --workspace "$CM_BUILD_DIR/$XCODE_WORKSPACE" \
-            --scheme "$XCODE_SCHEME" \
+            --project "YouTube.xcodeproj" \
+            --scheme "YouTube" \
             --archive-directory build/ios/xcarchive \
             --ipa-directory build/ios/ipa
-    
     artifacts:
       - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
